@@ -21,15 +21,21 @@ package org.languagetool.rules;
 import java.util.Objects;
 
 public class SuggestionWithMessage {
-  
+
   private final String suggestion;
   private final String message;
 
-  SuggestionWithMessage(String suggestion) {
+  /**
+   * public @since 5.3
+   */
+  public SuggestionWithMessage(String suggestion) {
     this(suggestion, null);
   }
 
-  SuggestionWithMessage(String suggestion, String message) {
+  /**
+   * public @since 5.3
+   */
+  public SuggestionWithMessage(String suggestion, String message) {
     this.suggestion = Objects.requireNonNull(suggestion);
     this.message = message;
   }

@@ -1,6 +1,6 @@
-/* LanguageTool, a natural language style checker 
+/* LanguageTool, a natural language style checker
  * Copyright (C) 2005 Daniel Naber (http://www.danielnaber.de)
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -23,8 +23,11 @@ import java.util.List;
 
 import org.languagetool.tokenizers.Tokenizer;
 
-import com.hankcs.hanlp.seg.common.Term;
-import com.hankcs.hanlp.tokenizer.BasicTokenizer;
+//import com.hankcs.hanlp.seg.common.Term;
+//import com.hankcs.hanlp.tokenizer.StandardTokenizer;
+import com.hankcs.hanlp.model.crf.CRFLexicalAnalyzer;
+import com.hankcs.hanlp.corpus.document.sentence.Sentence;
+import com.hankcs.hanlp.corpus.document.sentence.word.IWord;
 import cn.com.cjf.CJFBeanFactory;
 import cn.com.cjf.ChineseJF;
 
@@ -42,10 +45,20 @@ public class ChineseWordTokenizer implements Tokenizer {
   public List<String> tokenize(String text) {
     init();
     try {
-      List<Term> termList = BasicTokenizer.segment(text);
+      /*
+      List<Term> termList = StandardTokenizer.segment(text);
       List<String> words = new ArrayList<>(termList.size());
       for (Term term : termList) {
         words.add(term.toString());
+      }
+      return words;
+      */
+      CRFLexicalAnalyzer analyzer = new CRFLexicalAnalyzer();
+      Sentence sentence = analyzer.analyze(text);
+      List<IWord> wordList = sentence.wordList;
+      List<String> words = new ArrayList<>(wordList.size());
+      for (IWord word : wordList) {
+        words.add(word.toString());
       }
       return words;
     } catch (Exception e) {

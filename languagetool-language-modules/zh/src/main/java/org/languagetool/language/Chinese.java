@@ -1,6 +1,6 @@
-/* LanguageTool, a natural language style checker 
+/* LanguageTool, a natural language style checker
  * Copyright (C) 2005 Daniel Naber (http://www.danielnaber.de)
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -24,7 +24,8 @@ import org.languagetool.UserConfig;
 import org.languagetool.languagemodel.LanguageModel;
 import org.languagetool.languagemodel.LuceneLanguageModel;
 import org.languagetool.rules.*;
-import org.languagetool.rules.zh.ChineseConfusionProbabilityRule;
+import org.languagetool.rules.zh.*;
+//import org.languagetool.rules.zh.ChineseConfusionProbabilityRule;
 import org.languagetool.tagging.Tagger;
 import org.languagetool.tagging.zh.ChineseTagger;
 import org.languagetool.tokenizers.SentenceTokenizer;
@@ -52,20 +53,22 @@ public class Chinese extends Language implements AutoCloseable {
 
   @Override
   public String[] getCountries() {
-    return new String[] { "CN" };
+    return new String[] { "", "CN", "TW" };
   }
 
   @Override
   public Contributor[] getMaintainers() {
-    return new Contributor[] { new Contributor("Tao Lin") };
+    return new Contributor[] {
+      new Contributor("Tao Lin"),
+      new Contributor("Chunshek Chan")
+    };
   }
 
   @Override
-  public List<Rule> getRelevantRules(ResourceBundle messages, UserConfig userConfig, Language motherTongue, List<Language> altLanguages) {
-    return Arrays.asList(
-            new DoublePunctuationRule(messages),
-            new MultipleWhitespaceRule(messages, this)
-    );
+  public List<Rule> getRelevantRules(ResourceBundle messages, UserConfig userConfig, Language motherTongue, List<Language> altLanguages) throws IOException {
+    List<Rule> rules = new ArrayList<>();
+    rules.add(new ChineseVariantCoherencyRule(messages, this));
+    return rules;
   }
 
   @NotNull
@@ -94,12 +97,52 @@ public class Chinese extends Language implements AutoCloseable {
   @Override
   public List<Rule> getRelevantLanguageModelRules(ResourceBundle messages, LanguageModel languageModel, UserConfig userConfig) throws IOException {
     return Arrays.asList(
-            new ChineseConfusionProbabilityRule(messages, languageModel, this)
+      new ChineseConfusionProbabilityRule(messages, languageModel, this)
     );
   }
 
+  /** @since 5.3 */
+  public String getOpeningDoubleQuote() {
+    return "“";
+  }
+
+  /** @since 5.3 */
+  public String getClosingDoubleQuote() {
+    return "”";
+  }
+
+  /** @since 5.3 */
+  @Override
+  public String getOpeningSingleQuote() {
+    return "‘";
+  }
+
+  /** @since 5.3 */
+  @Override
+  public String getClosingSingleQuote() {
+    return "’";
+  }
+
+  /** @since 5.3 */
+  @Override
+  public boolean isAdvancedTypographyEnabled() {
+    return true;
+  }
+
+  /** @since 5.3 */
+  @Override
+  public String toAdvancedTypography (String input) {
+    String output = super.toAdvancedTypography(input);
+
+    // changing "smart quote" used in English contractions to apostrophes
+    // since the "right single quotation mark" appears as full-width
+    // in most CJK fonts
+    output = output.replaceAll("([\\p{script=LATIN}\\d-])’([\\p{script=LATIN}«])", "$1'$2");
+    return output;
+  }
+
   /**
-   * Closes the language model, if any. 
+   * Closes the language model, if any.
    * @since 3.1
    */
   @Override
@@ -108,5 +151,6 @@ public class Chinese extends Language implements AutoCloseable {
       languageModel.close();
     }
   }
+
 
 }
