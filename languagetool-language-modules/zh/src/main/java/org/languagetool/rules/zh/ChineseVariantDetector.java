@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.lang.Character;
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.Objects;
 import java.util.Scanner;
 
 import org.languagetool.AnalyzedSentence;
