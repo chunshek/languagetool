@@ -9885,6 +9885,31 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
     <!-- Siehe auch ../../resource/de/compounds.txt -->
     <!-- ====================================================================== -->
     <category id="COMPOUNDING" name="Getrennt- und Zusammenschreibung">
+        <rule id="DURCH_SCHAUEN" name="durch + Verb" default="temp_off">
+            <antipattern>
+                <token skip="2" regexp="yes">dort|hier|da|quer|oben|unten</token>
+                <token>durch</token>
+            </antipattern>
+            <antipattern>
+                <token>durch</token>
+                <token regexp="yes">und|&amp;</token>
+                <token>durch</token>
+            </antipattern>
+            <antipattern>
+                <token regexp="yes">Bedürfnis|Verlangen</token>
+                <token>durch</token>
+            </antipattern>
+            <pattern>
+                <token>durch</token>
+                <!-- many verbs missing -->
+                <token inflected="yes" regexp="yes" case_sensitive="yes">schauen|steigen|stehen|graben|atmen|beißen|beissen|bekommen|checken|denken|drehen|fahren|fallen|fegen|feiern|gehen|laufen|halten|impfen|jagen|kauen|kämpfen|kitzeln|klettern|klicken|lassen|leben|machen|mischen|nehmen|nummerieren|nässen|pauken|planen|rauschen|rechnen|testen|tasten|vögeln</token>
+            </pattern>
+            <message>Das Verb <suggestion>durch<match no="2" case_conversion="alllower" /></suggestion> wird als ein Wort geschrieben.</message>
+            <example correction="durchschaut">Er hat mich <marker>durch schaut</marker>!</example>
+            <example>Du musst da durch steigen, um an die Oberfläche zu kommen.</example>
+            <example>Quer durch geht nicht immer gut.</example>
+            <example>Ich habe ständig das Bedürfnis durch klicken und halten der linken Mouse-Taste den Activity Tracker drehen zu wollen.</example>
+        </rule>
         <rulegroup id="ALL_IN_ONE" name="All-in-one-Soundsystem">
             <rule>
                 <pattern>
@@ -19971,6 +19996,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
             <example correction="Liebe Grüße|Lieber Gruß"><marker>LG</marker></example>
         </rule>
         <rule id="SIE_GROSS" name="Möglicherweise fälschlich großgeschriebenes 'Sie'">
+            <antipattern>
+                <token regexp="yes">wer|was</token>
+                <token>hat</token>
+                <token>sie</token>
+                <token postag=".*PA2.*" postag_regexp="yes"/>
+            </antipattern>
             <pattern case_sensitive='yes'>
                 <token postag='SENT_START'/>
                 <token postag='ADV.*' postag_regexp='yes' min="0"/>
@@ -19983,6 +20014,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
             <example correction="sie">Aber gibt <marker>Sie</marker> uns das?</example>
             <example correction="sie">Gibt <marker>Sie</marker> uns das?</example>
             <example>Der Bus wird <marker>Sie</marker> zum Stadtzentrum bringen.</example>
+            <example>Was hat Sie veranlasst, die Polizei zu rufen?</example>
         </rule>
         <rulegroup id="SIE_ANREDE" name="Möglicherweise fälschlich kleingeschriebenes 'sie' markieren" default="off">
             <short>Möglicherweise fälschlich kleingeschriebenes 'sie'.</short>
@@ -20163,7 +20195,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                     <token regexp="yes" case_sensitive="yes">Alle[snm]?</token><!-- "Allen" is a name-->
                 </marker>
             </pattern>
-            <message>Wenn Sie das Zahlwort <suggestion><match no="2" case_conversion="alllower" /></suggestion> meinen (im Sinne von "jeder/n") wird es kleingeschrieben.</message>
+            <message>Außer in der Redewendung "Ein und Alles" wird dieses Wort immer kleingeschrieben.</message>
+            <suggestion><match no="2" case_conversion="alllower" /></suggestion>
             <url>https://blog.leo.org/2009/12/15/alles-bleibt-selbst-hoflich-klein/</url>
             <example correction="allen">Ich bin euch <marker>Allen</marker> dankbar.</example>
             <example correction="alle">Dieser Dank geht an <marker>Alle</marker> die sich für mich eingesetzt haben.</example>
@@ -40043,7 +40076,7 @@ Andere Projekte</example>
             </rule>
             <rule default="temp_off">
                 <pattern>
-                    <token>gemäß</token>
+                    <token regexp="yes">gemä(ß|ss)</token>
                     <token postag_regexp="yes" postag="ADJ:.*" min="0"/>
                     <marker>
                         <token postag_regexp="yes" postag="SUB:.*"><exception postag_regexp="yes" postag="SUB:DAT:.*"></exception></token>
@@ -40060,10 +40093,10 @@ Andere Projekte</example>
                 <antipattern>
                     <!-- ihrem Wunsch gemäß -->
                     <token>Wunsch</token>
-                    <token>gemäß</token>
+                    <token regexp="yes">gemä(ß|ss)</token>
                 </antipattern>
                 <pattern>
-                    <token>gemäß</token>
+                    <token regexp="yes">gemä(ß|ss)</token>
                     <marker>
                         <token regexp="yes">die|den|der</token>
                         <token postag_regexp="yes" postag="ADJ:.*" min="0"/>
@@ -42439,6 +42472,13 @@ Andere Projekte</example>
         <rulegroup id="ALLES_MOEGLICHE" name="'alles mögliche (Mögliche)'">
             <url>https://www.korrekturen.de/wortliste/alles_moegliche.shtml</url>
             <rule>
+                <antipattern>
+                    <token>alles</token>
+                    <token postag="ADJ:(AKK|NOM):PLU:NEU:...:SOL" postag_regexp="yes" />
+                    <token regexp="yes" min="0">oder|und|&amp;</token>
+                    <token postag="ADJ:(AKK|NOM):PLU:NEU:...:SOL|UNKNOWN" postag_regexp="yes" />
+                    <token postag="SUB:.+" postag_regexp="yes" />
+                </antipattern>
                 <pattern>
                     <token>alles</token>
                     <marker>
@@ -42461,6 +42501,8 @@ Andere Projekte</example>
                 <example>Er stellte fest, dass der Klimawandel alles irdische Leben ausgelöscht hatte.</example>
                 <example>Das ist alles zwangsweise eine Sache der Erziehung.</example>
                 <example>Du siehst so aus wie jemand, dem ich gleich sagen werde, dass ich ihn über alles liebe!</example>
+                <example>Das sind alles wichtige und zukunftsweisende Ideen.</example>
+                <example>Das sind alles junge hübsche Mädels.</example>
             </rule>
             <rule>
                 <pattern>
@@ -45105,7 +45147,7 @@ Andere Projekte</example>
                     </token>
                     <token postag="SENT_END"/>
                 </pattern>
-                <message>Ein mit der Subjunktion '\2' eingeleiteter Nebensatz wird in der Regel mit (mindestens) einem Komma vom Hauptsatz abgetrennt.</message>
+                <message>Der von '\2' eingeleitete Nebensatz muss in der Regel mit einem Komma vom Hauptsatz getrennt werden.</message>
                 <suggestion><match no="1" include_skipped="all"/>, \2</suggestion>
                 <example>Er mag das Spiel, <marker>weil</marker> es ihm Spaß macht.</example>
                 <example>Er mag das Spiel, auch <marker>weil</marker> es Spaß macht.</example>
@@ -45131,9 +45173,9 @@ Andere Projekte</example>
                     <marker>
                         <token skip="-1" regexp="yes">Dass|Obwohl|Obgleich|Sodass|Wenn<exception scope="next" regexp="yes">,|–|\-|;|\:|&anfauf;|…|[0-9]+|\?|\!|&gt;|\=|&klamauf;|möglich</exception></token>
                     </marker>
-                    <token postag="SENT_END"/>
+                    <token postag="SENT_END" regexp="yes">\p{P}</token>
                 </pattern>
-                <message>Ein mit der Subjunktion '<match case_conversion="alllower" no="2"/>' eingeleiteter Nebensatz wird in der Regel mit einem Komma vom Hauptsatz abgetrennt.</message>
+                <message>Der von '<match case_conversion="alllower" no="2"/>' eingeleitete Nebensatz muss in der Regel mit einem Komma vom Hauptsatz getrennt werden.</message>
                 <example>Obwohl er groß ist, kommt er dran.</example>
                 <example correction=""><marker>Obwohl</marker> er groß ist kommt er dran.</example>
                 <example>"Obwohl das so ist!"</example>
